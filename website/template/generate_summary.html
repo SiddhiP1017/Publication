@@ -1,0 +1,352 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaraAnsh - Generate Summary</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+  <link rel="stylesheet" href="{%  static 'style.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    /* Initially hide the summary and visualization preview */
+    #summaryDisplay, #visualizationDisplay {
+      display: none;
+    }
+    .graph-img {
+      height: 300px; /* Set a uniform height for graphs */
+      width: 100%;   /* Make graphs responsive */
+      display: none;  /* Initially hide graphs */
+    }
+
+    /* Navbar Styles */
+    .navbar {
+            background: linear-gradient(90deg, rgb(112, 128, 144), rgb(192, 192, 192));
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.75rem;
+            color: white;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: black;
+            padding: 0px 7px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #d4d4d4;
+        }
+
+
+     /* Footer Styles */
+footer {
+    background-color: #343a40;
+    color: white;
+    padding: 50px 0;
+    margin-top: 140px;
+    border-top: 1px solid #454d55; /* Subtle border for separation */
+}
+
+footer .container {
+    display:flex;
+    flex-wrap: wrap; /* Allows for responsive behavior */
+    justify-content: space-between; /* Spreads out the sections */
+    
+    
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px; /* Ensures minimum width for responsiveness */
+    margin-bottom: 10px;
+}
+
+.footer-links, .footer-contact, .footer-social {
+    margin-bottom: 20px;
+}
+
+.footer-links a, .footer-contact p, .footer-social a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    margin-bottom:10px;
+    
+}
+
+.footer-links a:hover, .footer-social a:hover {
+    text-decoration: underline;
+}
+
+.footer-links a {
+    font-size: 1.1rem;
+}
+
+.footer-contact {
+    font-size: 1.1rem;
+}
+
+.footer-contact i {
+    font-size: 1.4rem; /* Slightly larger icons for visibility */
+    margin-right: 10px;
+}
+
+.footer-social {
+    text-align: center; /* Center-align the content */
+}
+
+.footer-social h4 {
+    margin-bottom: 15px;
+    font-size: 1.2rem; /* Adjust font size for the title */
+}
+
+.footer-social .social-icons {
+    display: flex;
+    justify-content: center; /* Center the icons horizontally */
+}
+
+.footer-social a {
+    margin: 0 10px; /* Space between icons */
+}
+
+.footer-social i {
+    font-size: 1.8rem; /* Larger icons for better visibility */
+    color: #ffffff;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.footer-social i:hover {
+    color: #cccccc;
+    transform: scale(1.1); /* Slightly enlarge icons on hover */
+}
+
+.footer-copyright {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #a0a0a0;
+    margin-top: 20px;
+}
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container p-1">
+      <a class="navbar-brand" href="#"><i class="bi bi-file-ppt-fill"></i>&nbsp;&nbsp;SaraAnsh</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'upload' %}">Upload</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'generate_summary' %}">Generate Summary</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'settings' %}">Settings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'help' %}">Help</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+      </ul>
+      
+    </div>
+  </div>
+</nav>
+
+<!-- Generate Summary Page Content -->
+<div class="container my-5">
+  <h2>Generate Publication Summary</h2>
+  
+  <!-- Filters -->
+  <form method="POST" action="{% url 'generate_summary' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label for="facultySelect" class="form-label">Select Faculty Member</label>
+        <select class="form-select" id="facultySelect">
+          <option selected>Choose...</option>
+          <option>All</option>
+          <option>Dr. Ashwini Gawali</option>
+          <option>Dr. Ulhas Shinde</option>
+          <option>Dr. S.Zanwar</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="startYear" class="form-label">Start Year</label>
+        <input type="number" class="form-control" id="startYear" placeholder="YYYY">
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="endYear" class="form-label">End Year</label>
+        <input type="number" class="form-control" id="endYear" placeholder="YYYY">
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="publicationType" class="form-label">Publication Type</label>
+        <select class="form-select" id="publicationType">
+          <option selected>Choose...</option>
+          <option>All</option>
+          <option>Journal</option>
+          <option>Conference</option>
+          <option>Book Chapter</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="sortBy" class="form-label">Sort By</label>
+        <select class="form-select" id="sortBy">
+          <option selected>Choose...</option>
+          <option>Date</option>
+          <option>Citation Count</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <button type="button" class="btn btn-primary mt-4" id="generateSummary" onclick="showSummary()">Generate Summary</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Summary Display with table -->
+  <div id="summaryDisplay" class="mt-5">
+    <h3>Summary Preview</h3>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Publication Title</th>
+            <th>Faculty Name</th>
+            <th>Year</th>
+            <th>Publication Type</th>
+            <th>Citation Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Sample rows with provided data -->
+          <tr>
+            <td>A low cost environment monitoring system using raspberry Pi and arduino with Zigbee</td>
+            <td>Dr. Ulhas Shinde</td>
+            <td>2016</td>
+            <td>Conference</td>
+            <td>102</td>
+          </tr>
+          <tr>
+            <td>Preparation and characterization of Co2+ substituted Li–Dy ferrite ceramics</td>
+            <td>Dr. Ulhas Shinde</td>
+            <td>2013</td>
+            <td>Journal</td>
+            <td>46</td>
+          </tr>
+          <tr>
+            <td>Home Based Security Control System using Raspberry Pi and GSM</td>
+            <td>Dr. Shrinivas R. Zanwar</td>
+            <td>2016</td>
+            <td>Journal</td>
+            <td>32</td>
+          </tr>
+          <tr>
+            <td>Advanced Agriculture System</td>
+            <td>Dr. Shrinivas R. Zanwar</td>
+            <td>2012</td>
+            <td>Journal</td>
+            <td>28</td>
+          </tr>
+          <tr>
+            <td>3d face recognition using geodesic facial curves to handle expression, occlusion and pose variations</td>
+            <td>Dr. A S Gavali</td>
+            <td>2014</td>
+            <td>Journal</td>
+            <td>24</td>
+          </tr>
+          <tr>
+            <td>Convolutional neural network-VGG16 for road extraction from remotely sensed images</td>
+            <td>Dr. Saroj Date</td>
+            <td>2020</td>
+            <td>Journal</td>
+            <td>7</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="action-buttons">
+      <button class="btn btn-success">Download as Word</button>
+      <button class="btn btn-success">Download as Excel</button>
+      <button class="btn btn-success" id="visualizeButton" onclick="showVisualization()">Visualize Summary</button>
+    </div>
+  </div>
+
+  <!-- Visualization Section -->
+  <div id="visualizationDisplay" class="mt-5">
+    <h3>Summary Visualization</h3>
+    <div class="row">
+      <div class="col-md-6">
+        <img src="Graphs_img/G1.png" alt="Graph 1" class="graph-img">
+      </div>
+      <div class="col-md-6">
+        <img src="Graphs_img/G2.png" alt="Graph 2" class="graph-img">
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <img src="Graphs_img/G3.png" alt="Graph 3" class="graph-img">
+      </div>
+      <div class="col-md-6">
+        <img src="Graphs_img/G4.png" alt="Graph 4" class="graph-img">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+      <div class="footer-section footer-links">
+          <h4>Quick Links</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Us</a>
+      </div>
+      <div class="footer-section footer-contact">
+          <h4>Contact Information</h4>
+          <p><i class="bi bi-geo-alt"></i> Kanchanwadi, Chh. Sambhajinagar, Maharashtra</p>
+          <p><i class="bi bi-envelope"></i> <a href="mailto:info@pubsum.com">info@SaraAnsh.com</a></p>
+          <p><i class="bi bi-telephone"></i> +91 9876543210</p>
+      </div>
+      <div class="footer-section footer-social">
+          <h4>Follow Us</h4>
+          <div class="social-icons">
+              <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+              <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+              <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+          </div>
+      </div>
+  </div>
+  <div class="footer-copyright">
+      &copy; 2024 SaraAnsh. All rights reserved.
+  </div>
+</footer>
+
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function showSummary() {
+    document.getElementById('summaryDisplay').style.display = 'block';
+  }
+
+  function showVisualization() {
+    document.getElementById('visualizationDisplay').style.display = 'block';
+    let graphs = document.querySelectorAll('.graph-img');
+    let delay = 1000; // Delay in milliseconds
+
+    // Load graphs one by one
+    graphs.forEach((graph, index) => {
+      setTimeout(() => {
+        graph.style.display = 'block'; // Show graph after delay
+      }, index * delay);
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaraAnsh - Upload Data</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!--Unicons-->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"/>
+  <style>
+    /* Initially hide the data preview section */
+    #previewSection {
+      display: none;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+            background: linear-gradient(90deg, rgb(112, 128, 144), rgb(192, 192, 192));
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.75rem;
+            color: white;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: black;
+            padding: 0px 7px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #d4d4d4;
+        }
+
+
+     /* Footer Styles */
+footer {
+    background-color: #343a40;
+    color: white;
+    padding: 50px 0;
+    margin-top: 140px;
+    border-top: 1px solid #454d55; /* Subtle border for separation */
+}
+
+footer .container {
+    display:flex;
+    flex-wrap: wrap; /* Allows for responsive behavior */
+    justify-content: space-between; /* Spreads out the sections */
+    
+    
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px; /* Ensures minimum width for responsiveness */
+    margin-bottom: 10px;
+}
+
+.footer-links, .footer-contact, .footer-social {
+    margin-bottom: 20px;
+}
+
+.footer-links a, .footer-contact p, .footer-social a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    margin-bottom:10px;
+    
+}
+
+.footer-links a:hover, .footer-social a:hover {
+    text-decoration: underline;
+}
+
+.footer-links a {
+    font-size: 1.1rem;
+}
+
+.footer-contact {
+    font-size: 1.1rem;
+}
+
+.footer-contact i {
+    font-size: 1.4rem; /* Slightly larger icons for visibility */
+    margin-right: 10px;
+}
+
+.footer-social {
+    text-align: center; /* Center-align the content */
+}
+
+.footer-social h4 {
+    margin-bottom: 15px;
+    font-size: 1.2rem; /* Adjust font size for the title */
+}
+
+.footer-social .social-icons {
+    display: flex;
+    justify-content: center; /* Center the icons horizontally */
+}
+
+.footer-social a {
+    margin: 0 10px; /* Space between icons */
+}
+
+.footer-social i {
+    font-size: 1.8rem; /* Larger icons for better visibility */
+    color: #ffffff;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.footer-social i:hover {
+    color: #cccccc;
+    transform: scale(1.1); /* Slightly enlarge icons on hover */
+}
+
+.footer-copyright {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #a0a0a0;
+    margin-top: 20px;
+}
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container p-2">
+    <a class="navbar-brand" href="#"><i class="nav_logo"></i>&nbsp;&nbsp;SaraAnsh</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'upload' %}">Upload</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'generate_summary' %}">Generate Summary</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'settings' %}">Settings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'help' %}">Help</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+      </ul>
+      
+    </div>
+  </div>
+</nav>
+
+
+<!-- Upload Page Content -->
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h1>Upload Your Data</h1>
+    <p class="lead">Simplify and manage your publication records for profile building.</p>
+  </div>
+  
+  <!-- File Upload Form -->
+  <form id="uploadForm">
+    <div class="row g-3">
+      <div class="col-md-12">
+        <label for="dataFile" class="form-label">Upload Excel or BibTeX File</label>
+        <input class="form-control" type="file" id="dataFile" accept=".xlsx,.xls,.bib">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Upload</button>
+  </form>
+
+  <!-- Data Preview (Initially Hidden) -->
+  <div class="mt-5" id="previewSection">
+    <h3 class="mb-3">Preview of Uploaded Data</h3>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Faculty Name</th>
+          <th>Google Scholar URL</th>
+        </tr>
+      </thead>
+      <tbody id="dataPreview">
+        <!-- Sample Data -->
+        <tr>
+          <td>Dr. Ulhas Shinde</td>
+          <td>https://scholar.google.com/citations?hl=en&user=JPHnxiMAAAAJ</td>
+        </tr>
+        <tr>
+          <td>Dr. Saroj Date</td>
+          <td>https://scholar.google.com/citations?hl=en&user=5JUKGU0AAAAJ</td>
+        </tr>
+        </tr>
+          <td>Dr. Shrinivas R. Zanwar</td>
+          <td>https://scholar.google.com/citations?hl=en&user=Nxho6ysAAAAJ</td>
+        </tr>
+      </tr>
+      <td>Dr. A S Gavali</td>
+      <td>https://scholar.google.com/citations?hl=en&user=ATQ7WnUAAAAJ</td>
+    </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-warning">Edit</button>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+      <div class="footer-section footer-links">
+          <h4>Quick Links</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Us</a>
+      </div>
+      <div class="footer-section footer-contact">
+          <h4>Contact Information</h4>
+          <p><i class="bi bi-geo-alt"></i> Kanchanwadi, Chh. Sambhajinagar, Maharashtra</p>
+          <p><i class="bi bi-envelope"></i> <a href="mailto:info@pubsum.com">info@SaraAnsh.com</a></p>
+          <p><i class="bi bi-telephone"></i> +91 9876543210</p>
+      </div>
+      <div class="footer-section footer-social">
+          <h4>Follow Us</h4>
+          <div class="social-icons">
+              <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+              <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+              <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+          </div>
+      </div>
+  </div>
+  <div class="footer-copyright">
+      &copy; 2024 SaraAnsh. All rights reserved.
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.getElementById('uploadForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const fileInput = document.getElementById('dataFile').files[0];
+    
+    if (!fileInput) {
+      alert('Please select a file to upload!');
+      return;
+    }
+
+    // Show the preview section only after file is selected
+    document.getElementById('previewSection').style.display = 'block';
+
+    // Logic to handle file content (Excel or BibTeX) can be added here
+    // For demonstration purposes, we're just showing a preview section
+  });
+</script>
+</body>
+</html>
